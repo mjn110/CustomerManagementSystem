@@ -1,0 +1,18 @@
+@WebApi_HostAddress = http://localhost:5130
+
+POST {{WebApi_HostAddress}}/order/create
+Content-Type: application/json
+{
+   "Name": "New Order",
+   "TotalAmount": 250
+}
+
+###
+
+GET {{WebApi_HostAddress}}/order
+Accept: application/json
+
+###
+
+GET {{WebApi_HostAddress}}/order/6dda7ce8-bb22-42a5-98fe-03206a3ae58d
+Accept: application/json

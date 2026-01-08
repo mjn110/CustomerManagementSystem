@@ -1,0 +1,9 @@
+@WebApi_HostAddress = http://localhost:5130
+
+GET {{WebApi_HostAddress}}/item
+Accept: application/json
+
+###
+
+GET {{WebApi_HostAddress}}/order/6dda7ce8-bb22-42a5-98fe-03206a3ae58d
+Accept: application/json

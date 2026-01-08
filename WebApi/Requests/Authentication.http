@@ -1,0 +1,19 @@
+@WebApi_HostAddress = http://localhost:5130
+
+POST {{WebApi_HostAddress}}/auth/register
+Content-Type: application/json
+{
+    "firstName": "Muhammad",
+    "lastName": "Najafi",
+    "Email": "mjn220@gmail.com",
+    "Password": "MUNA1232!"
+}
+
+###
+
+POST {{WebApi_HostAddress}}/auth/login
+Content-Type: application/json
+{
+    "Email": "mjn220@gmail.com",
+    "Password": "MUNA1232!"
+}
