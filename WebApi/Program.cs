@@ -1,6 +1,7 @@
 using Application;
 using Application.Services.Items;
 using Application.Services.Orders;
+using Domain.Entities;
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,9 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+
+builder.Services.AddHttpContextAccessor();
+
 //builder.Services.AddControllers();
 
 var app = builder.Build();

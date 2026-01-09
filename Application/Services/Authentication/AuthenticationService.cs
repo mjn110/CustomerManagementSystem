@@ -16,7 +16,7 @@ namespace Application.Services.Authentication
             _userRepository = userRepository;
         }
 
-        public AuthenticationResponse Register(string firstName, string lastName, string Email, string Password)
+        public async Task<AuthenticationResponse> Register(string firstName, string lastName, string Email, string Password)
         {
             // Validate user doesn't exist
             if (_userRepository.GetUserByEmail(Email) is not null)
@@ -25,41 +25,52 @@ namespace Application.Services.Authentication
             }
 
             // Create user in database(Generate unique ID) & Persist to database
-            var user = new User
+            var CreateResult = await _userRepository.Add(firstName, lastName, Email, Password);
+            if (!CreateResult.Succeeded)
             {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = Email,
-            };
+                throw new Exception("Failed to create user.");
+            }
 
-            _userRepository.Add(user);
+            //Retrieve the newly created user
+            var RegisteredUser = _userRepository.GetUserByEmail(Email);
+
+            // Assign user role
+            var RoleResult = await _userRepository.AssignUserRole(RegisteredUser);
+            if (!RoleResult.Succeeded)
+            {
+                throw new Exception("Failed to assign user role.");
+            }
 
             // Create JWT token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = _jwtTokenGenerator.GenerateToken(RegisteredUser);
 
             return new AuthenticationResponse(
-                user,
+                RegisteredUser,
                 token
             );
         }
         public AuthenticationResponse Login(string Email, string Password)
         {
+            var User = new User();
             // Validate user exists
-            if(_userRepository.GetUserByEmail(Email) is not User user)
+            if (_userRepository.GetUserByEmail(Email) is not User user)
             {
                 throw new Exception("User with given email does not exist.");
             }
 
             // Validate user credentials
-            //if(user.Password != Password)
-            //{
-            //    throw new Exception("Invalid password.");
-            //}
+            try {
+                User = _userRepository.GetUserByEmail(Email);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Invalid credentials provided.");
+            }
 
             // Create JWT token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var token = _jwtTokenGenerator.GenerateToken(User);
             return new AuthenticationResponse(
-                user,
+                User,
                 token
             );
         }

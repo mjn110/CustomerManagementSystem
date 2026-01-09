@@ -21,28 +21,16 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDto request)
         {
-            var user = new User
-            {
-                UserName = request.Email,
-                Email = request.Email,
-                FirstName = request.firstName,
-                LastName = request.lastName
-            };
-            IdentityResult identityResult = await _userManager.CreateAsync(user, request.Password);
+            var response = _authenticationService.Register(request.firstName, request.lastName, request.Email, request.Password);
 
-            if (!identityResult.Succeeded)
+            if (response is null)
             { 
-                return (IActionResult)Results.BadRequest(identityResult.Errors);
+                return (IActionResult)Results.BadRequest();
             }
 
-            IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, Roles.User);
+            //IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, Roles.User);
 
-            if (!identityResult.Succeeded)
-            {
-                return (IActionResult)Results.BadRequest(identityResult.Errors);
-            }
-
-            return (IActionResult)Results.Ok();
+            return Ok(response.Result.Token);
         }
 
         [HttpPost("login")]
@@ -51,11 +39,6 @@ namespace WebApi.Controllers
             var response = _authenticationService.Login(
                 request.Email,
                 request.Password);
-
-            //var response = new AuthenticationResponse(
-            //    authResult.User,
-            //    authResult.Token
-            //);
 
             return Ok(response);
         }

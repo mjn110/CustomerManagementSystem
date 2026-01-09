@@ -10,10 +10,7 @@ using Application.Common.Interface.Persistence;
 using Application.Common.Interface.Services;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity; // FIX: Add this using directive
-using Microsoft.Extensions.DependencyInjection; // FIX: Add this using directive
-using Microsoft.AspNetCore.Identity; // FIX: Ensure correct using for AddIdentity
+using Application.Services.Authentication;
 
 namespace Infrastructure;
 
@@ -31,7 +28,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
-        
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
+
         // Add DbContext
         services.AddDbContext<CustomerOrderManagementContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
@@ -39,6 +37,7 @@ public static class DependencyInjection
         // FIX: Ensure AddIdentity extension method is available by referencing the correct NuGet package and using directive
         services.AddIdentityCore<User>()
             .AddRoles<IdentityRole>()
+            .AddSignInManager()
             .AddEntityFrameworkStores<CustomerOrderManagementContext>();
 
         return services;
