@@ -21,26 +21,47 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDto request)
         {
-            var response = _authenticationService.Register(request.firstName, request.lastName, request.Email, request.Password);
+            try
+            {
+                var response = await _authenticationService.Register(request.firstName, request.lastName, request.Email, request.Password);
 
-            if (response is null)
-            { 
-                return (IActionResult)Results.BadRequest();
+                if (response is null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(response.Token);
             }
-
-            //IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, Roles.User);
-
-            return Ok(response.Result.Token);
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred during registration.", details = ex.Message });
+            }
         }
 
         [HttpPost("login")]
         public IActionResult Login(LoginDto request)
         {
-            var response = _authenticationService.Login(
+            try
+            {
+                var response = _authenticationService.Login(
                 request.Email,
                 request.Password);
 
-            return Ok(response);
+                if (response is null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred during authentication.", details = ex.Message });
+            }
         }
     }
 }

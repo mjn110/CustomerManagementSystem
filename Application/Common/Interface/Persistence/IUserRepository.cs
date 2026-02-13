@@ -10,5 +10,5 @@ public interface IUserRepository
     Task<IdentityResult> AssignUserRole(User user);
     Task<IdentityResult> AssignAdminRole(User user);
     User GetUserByEmail(string email);
-    Task<SignInResult> LoginAsync(string email, string password);
+    Task<SignInResult> LoginAsync(User user, string password);
 }

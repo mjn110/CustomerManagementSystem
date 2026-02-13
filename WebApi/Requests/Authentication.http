@@ -17,3 +17,8 @@ Content-Type: application/json
     "Email": "mjn220@gmail.com",
     "Password": "MUNApass123!"
 }
+
+###
+
+GET {{WebApi_HostAddress}}/user/mjn220@gmail.com
+Accept: application/json

@@ -1,4 +1,5 @@
 using Application;
+using Application.Services.Authentication;
 using Application.Services.Items;
 using Application.Services.Orders;
 using Domain.Entities;
@@ -19,6 +20,7 @@ builder.Services
 builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSwaggerGen();
 
 //builder.Services.AddControllers();
 
@@ -30,6 +32,8 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
 
     using var scope = app.Services.CreateScope();
@@ -67,6 +71,12 @@ app.MapGet("/item/{id}", (Guid id, IItemService itemService) =>
 {
     var item = itemService.GetItemById(id);
     return item is null ? Results.NotFound() : Results.Ok(item);
+});
+
+app.MapGet("/user/{email}", (string email, IAuthenticationService authenticationService) =>
+{
+    var user = authenticationService.GetUser(email);
+    return user is null ? Results.NotFound() : Results.Ok(user);
 });
 
 app.Run();

@@ -12,9 +12,10 @@ public class UserRepository : IUserRepository
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
-    public UserRepository(UserManager<User> userManager)
+    public UserRepository(UserManager<User> userManager, SignInManager<User> signInManager)
     {
         _userManager = userManager;
+        _signInManager = signInManager;
     }
     //private static readonly List<User> _users = new();
     public async Task<IdentityResult> Add(string firstName, string lastName, string Email, string Password)
@@ -44,8 +45,8 @@ public class UserRepository : IUserRepository
         return _userManager.Users.SingleOrDefault(u => u.Email == email);
     }
 
-    public async Task<SignInResult> LoginAsync(string email, string password)
+    public async Task<SignInResult> LoginAsync(User user, string password)
     {
-        return await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
+        return await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
     }
 }
