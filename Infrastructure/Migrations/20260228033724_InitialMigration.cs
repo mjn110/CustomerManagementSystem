@@ -58,18 +58,19 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Items",
+                name: "Products",
                 schema: "identity",
                 columns: table => new
                 {
-                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<int>(type: "int", nullable: false),
-                    Stock = table.Column<int>(type: "int", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Items", x => x.ItemId);
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,7 +195,8 @@ namespace Infrastructure.Migrations
                 schema: "identity",
                 columns: table => new
                 {
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalAmount = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -213,6 +215,28 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductItems",
+                schema: "identity",
+                columns: table => new
+                {
+                    ProductItemId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    ItemName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductItems", x => x.ProductItemId);
+                    table.ForeignKey(
+                        name: "FK_ProductItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalSchema: "identity",
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderItem",
                 schema: "identity",
                 columns: table => new
@@ -221,23 +245,14 @@ namespace Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     ItemId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    OrderId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ItemId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderItem", x => x.OrderItemId);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Items_ItemId1",
-                        column: x => x.ItemId1,
-                        principalSchema: "identity",
-                        principalTable: "Items",
-                        principalColumn: "ItemId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderItem_Orders_OrderId1",
-                        column: x => x.OrderId1,
+                        name: "FK_OrderItem_Orders_OrderId",
+                        column: x => x.OrderId,
                         principalSchema: "identity",
                         principalTable: "Orders",
                         principalColumn: "OrderId",
@@ -299,22 +314,22 @@ namespace Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_ItemId1",
+                name: "IX_OrderItem_OrderId",
                 schema: "identity",
                 table: "OrderItem",
-                column: "ItemId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_OrderId1",
-                schema: "identity",
-                table: "OrderItem",
-                column: "OrderId1");
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserId",
                 schema: "identity",
                 table: "Orders",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductItems_ProductId",
+                schema: "identity",
+                table: "ProductItems",
+                column: "ProductId");
         }
 
         /// <inheritdoc />
@@ -345,15 +360,19 @@ namespace Infrastructure.Migrations
                 schema: "identity");
 
             migrationBuilder.DropTable(
+                name: "ProductItems",
+                schema: "identity");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles",
                 schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "Items",
+                name: "Orders",
                 schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "Orders",
+                name: "Products",
                 schema: "identity");
 
             migrationBuilder.DropTable(

@@ -5,6 +5,6 @@ namespace Application.Common.Interface.Persistence;
 public interface IOrderRepository
 {
     void AddOrder(Order order);
-    Order GetOrderById(Guid id);
+    Order GetOrderById(int id);
     List<Order> GetOrders();
 }

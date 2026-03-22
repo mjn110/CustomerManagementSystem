@@ -5,7 +5,7 @@ public interface IOrderService
 {
     public List<GetOrderDto> GetAllOrders();
 
-    public GetOrderDto GetOrderById(Guid id);
+    public GetOrderDto GetOrderById(int id);
 
     public void CreateOrder(CreateOrderDto createOrderDto);
 }

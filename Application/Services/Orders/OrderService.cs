@@ -24,7 +24,7 @@ public class OrderService : IOrderService
             .ToList();
     }
 
-    public GetOrderDto GetOrderById(Guid id)
+    public GetOrderDto GetOrderById(int id)
     {
         var order = _orderRepository.GetOrderById(id);
 

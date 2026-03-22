@@ -1,6 +1,7 @@
 ﻿using Application.Services.Authentication;
 using Application.Services.Items;
 using Application.Services.Orders;
+using Application.Services.Products;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
@@ -12,6 +13,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IItemService, ItemService>();
+        services.AddScoped<IProductService, ProductService>();
 
         return services;
     }

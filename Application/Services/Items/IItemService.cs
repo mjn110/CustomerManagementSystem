@@ -4,10 +4,10 @@ namespace Application.Services.Items
 {
     public interface IItemService
     {
-        public List<GetItemDto> GetAllItems();
+        //public List<GetItemDto> GetAllItems();
 
-        public GetItemDto GetItemById(Guid id);
+        //public GetItemDto GetItemById(int id);
 
-        public void CreateItem(CreateItemDto createOrderDto);
+        //public void CreateItem(CreateItemDto createOrderDto);
     }
 }

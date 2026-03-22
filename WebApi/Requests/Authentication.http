@@ -22,3 +22,37 @@ Content-Type: application/json
 
 GET {{WebApi_HostAddress}}/user/mjn220@gmail.com
 Accept: application/json
+
+###
+POST {{WebApi_HostAddress}}/product/create
+Content-Type: application/json
+{
+  "name": "string",
+  "items": [
+    {
+      "itemId": 0,
+      "name": "string",
+      "price": 0,
+      "stock": 0,
+      "productItems": [
+        {
+          "productItemId": 0,
+          "productId": 0,
+          "itemId": 0,
+          "product": {
+            "productId": 0,
+            "name": "string",
+            "description": "string",
+            "price": 0,
+            "productItems": [
+              "string"
+            ]
+          },
+          "item": "string"
+        }
+      ]
+    }
+  ],
+  "description": "string",
+  "price": 0
+}

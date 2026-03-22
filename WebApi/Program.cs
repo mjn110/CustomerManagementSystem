@@ -22,6 +22,7 @@ builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilt
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen();
 
+
 //builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -59,19 +60,19 @@ else
 app.MapControllers();
 
 app.MapGet("/order", async (IOrderService orderService) => orderService.GetAllOrders());
-app.MapGet("/item", async (IItemService itemService) => itemService.GetAllItems());
+//app.MapGet("/item", async (IItemService itemService) => itemService.GetAllItems());
 
-app.MapGet("/order/{id}", (Guid id, IOrderService orderService) =>
+app.MapGet("/order/{id}", (int id, IOrderService orderService) =>
 {
     var order = orderService.GetOrderById(id);
     return order is null ? Results.NotFound() : Results.Ok(order);
 });
 
-app.MapGet("/item/{id}", (Guid id, IItemService itemService) =>
-{
-    var item = itemService.GetItemById(id);
-    return item is null ? Results.NotFound() : Results.Ok(item);
-});
+//app.MapGet("/item/{id}", (int id, IItemService itemService) =>
+//{
+//    var item = itemService.GetItemById(id);
+//    return item is null ? Results.NotFound() : Results.Ok(item);
+//});
 
 app.MapGet("/user/{email}", (string email, IAuthenticationService authenticationService) =>
 {
