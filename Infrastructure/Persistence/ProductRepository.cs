@@ -37,5 +37,14 @@ namespace Infrastructure.Persistence
             _context.Products.Update(product);
             _context.SaveChanges();
         }
+
+        public void DeleteProduct(Product product)
+        {
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                _context.SaveChanges();
+            }
+        }
     }
 }

@@ -43,5 +43,12 @@ namespace WebApi.Controllers
             _productService.UpdateProduct(updateProductDto, productId);
             return Ok();
         }
+
+        [HttpDelete("delete")]
+        public IActionResult Delete(int productId)
+        {
+            _productService.DeleteProduct(productId);
+            return Ok();
+        }
     }
 }

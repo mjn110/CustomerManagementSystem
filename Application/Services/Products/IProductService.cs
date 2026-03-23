@@ -9,5 +9,6 @@ namespace Application.Services.Products
     {
         void CreateProduct(CreateProductDto createProductDto);
         void UpdateProduct(CreateProductDto updateProductDto, int productId);
+        void DeleteProduct(int productId);
     }
 }

@@ -42,5 +42,11 @@ namespace Application.Services.Products
                     .ToList();
             _productRepository.UpdateProduct(product);
         }
+
+        public void DeleteProduct(int productId)
+        {
+            Product product = _productRepository.GetProductById(productId);
+            _productRepository.DeleteProduct(product);
+        }
     }
 }
