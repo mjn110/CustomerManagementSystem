@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Entities
+namespace Domain.Items
 {
     public sealed class Lettuce : Item
     {

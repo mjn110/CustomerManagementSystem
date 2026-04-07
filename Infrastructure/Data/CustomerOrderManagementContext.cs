@@ -28,6 +28,20 @@ namespace Infrastructure.Data
             .WithMany(u => u.Orders)
             .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Product>()
+                .ToTable("Products", schema: null)
+                .HasKey(p => p.ProductId);
+
+            builder.Entity<ProductItem>()
+                .ToTable("ProductItems", schema: null)
+                .HasKey(pi => pi.ProductItemId);
+
+            builder.Entity<Product>()
+                .HasMany(p => p.ProductItems)
+                .WithOne(pi => pi.Product)
+                .HasForeignKey(pi => pi.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
         public DbSet<Order> Orders { get; set; }
         //public DbSet<Item> Items { get; set; }

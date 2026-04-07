@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    [Route("product")]
+    [Route("api/product")]
     [ApiController]
     public class ProductController : Controller
     {
@@ -15,40 +15,102 @@ namespace WebApi.Controllers
             _productService = productService;
         }
 
-        [HttpPost("create")]
-        public IActionResult Create(string Name, string Description, int Price, List<string> Items)
+        [HttpGet("all")]
+        public IActionResult GetAll()
         {
-            var createProductDto = new CreateProductDto
+            try
             {
-                Name = Name,
-                Description = Description,
-                Price = Price,
-                Items = Items
-            };
+                var products = _productService.GetAllProducts();
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error fetching products", error = ex.Message });
+            }
+        }
 
-            _productService.CreateProduct(createProductDto);
-            return Ok();
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            try
+            {
+                var product = _productService.GetProductById(id);
+                if (product == null)
+                {
+                    return NotFound(new { message = "Product not found" });
+                }
+
+                Frontend.Services.ProductDto wrappedProduct = new Frontend.Services.ProductDto
+                {
+                    Id = id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Items = product.ProductItems.Select(pi => pi.ItemName).ToList()
+                };
+
+                return Ok(wrappedProduct);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error fetching product", error = ex.Message });
+            }
+        }
+
+        [HttpPost("create")]
+        [IgnoreAntiforgeryToken]
+        public IActionResult Create([FromBody] CreateProductDto createProductDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _productService.CreateProduct(createProductDto);
+                return Ok(new { message = "Product created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error creating product", error = ex.Message });
+            }
         }
 
         [HttpPost("update")]
-        public IActionResult Update(string Name, string Description, int Price, List<string> Items, int productId)
+        [IgnoreAntiforgeryToken]
+        public IActionResult Update([FromQuery] int productId, [FromBody] CreateProductDto updateProductDto)
         {
-            var updateProductDto = new CreateProductDto
+            if (!ModelState.IsValid)
             {
-                Name = Name,
-                Description = Description,
-                Price = Price,
-                Items = Items
-            };
-            _productService.UpdateProduct(updateProductDto, productId);
-            return Ok();
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                _productService.UpdateProduct(updateProductDto, productId);
+                return Ok(new { message = "Product updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error updating product", error = ex.Message });
+            }
         }
 
         [HttpDelete("delete")]
-        public IActionResult Delete(int productId)
+        [IgnoreAntiforgeryToken]
+        public IActionResult Delete([FromQuery] int productId)
         {
-            _productService.DeleteProduct(productId);
-            return Ok();
+            try
+            {
+                _productService.DeleteProduct(productId);
+                return Ok(new { message = "Product deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error deleting product", error = ex.Message });
+            }
         }
     }
 }
+
