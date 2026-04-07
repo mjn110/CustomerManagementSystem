@@ -1,6 +1,5 @@
 ﻿using Application.DTO.Orders;
 using Application.Services.Orders;
-using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers

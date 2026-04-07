@@ -1,0 +1,158 @@
+@page "/products/create"
+@page "/products/edit/{ProductId:int}"
+@using Frontend.Services
+@inject ProductService ProductService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1>Product form</h1>
+
+            <EditForm Model="data" OnValidSubmit="HandleSubmit" >
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Product Name *</label>
+                    <InputText type="text" class="form-control" id="name" @bind-value="data.Name" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <InputText type="text" class="form-control" id="description" @bind-value="data.Description" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price *</label>
+                    <InputText type="text" class="form-control" id="price" @bind-value="data.Price" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="items" class="form-label">Items (comma-separated)</label>
+                    <InputText type="text" class="form-control" id="items" @bind-value="data.Items" />
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="submit" class="btn btn-primary">
+                        Submit
+                    </button>
+                </div>
+            </EditForm>
+
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <div class="mt-3 alert alert-info">@message</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int ProductId { get; set; } = 0;
+
+    private CreateProduct data { get; set; } = new CreateProduct();
+    private CreateProductDto model { get; set; } = new CreateProductDto();
+    private string itemsText = string.Empty;
+    private string message = "";
+    private bool isSubmitting = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ProductId != 0)
+        {
+            try
+            {
+                var product = await ProductService.GetProductByIdAsync(ProductId);
+                if (product is not null)
+                {
+                    data.Name = product.Name;
+                    data.Description = product.Description;
+                    data.Price = product.Price.ToString();
+                    data.Items = product.Items is { Count: > 0 }
+                        ? string.Join(", ", product.Items)
+                        : string.Empty;
+                }
+                else
+                {
+                    message = "Product not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                message = $"An error occurred while loading the product: {ex.Message}";
+                Console.WriteLine($"Error: {ex}");
+            }
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        // Validate form
+        if (string.IsNullOrWhiteSpace(data.Name))
+        {
+            message = "Product name is required.";
+            isSubmitting = false;
+            return;
+        }
+
+        if (int.Parse(data.Price) < 0)
+        {
+            message = "Price cannot be negative.";
+            isSubmitting = false;
+            return;
+        }
+
+
+        isSubmitting = true;
+        message = "";
+
+        try
+        {
+            // Parse items from text
+            model.Name = data.Name;
+            model.Description = data.Description;
+            model.Price = int.Parse(data.Price);
+            model.Items = string.IsNullOrWhiteSpace(data.Items)
+                ? new List<string>()
+                : data.Items
+                    .Split(',')
+                    .Select(item => item.Trim())
+                    .Where(item => !string.IsNullOrEmpty(item))
+                    .ToList();
+
+            bool success;
+            if (ProductId == 0)
+            {
+                success = await ProductService.CreateProductAsync(model);
+                message = success ? "Product created successfully!" : "Failed to create product.";
+            }
+            else
+            {
+                success = await ProductService.UpdateProductAsync(model, ProductId);
+                message = success ? "Product updated successfully!" : "Failed to update product.";
+            }
+
+            if (success)
+            {
+                await Task.Delay(1500);
+                NavigationManager.NavigateTo("");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"An error occurred: {ex.Message}";
+            Console.WriteLine($"Error: {ex}");
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/products");
+    }
+}

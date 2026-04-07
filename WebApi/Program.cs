@@ -1,6 +1,8 @@
 using Application;
+using Application.Services.Authentication;
 using Application.Services.Items;
 using Application.Services.Orders;
+using Domain.Entities;
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,11 @@ builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSwaggerGen();
+
+
 //builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -26,6 +33,8 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.MapOpenApi();
 
     using var scope = app.Services.CreateScope();
@@ -51,18 +60,24 @@ else
 app.MapControllers();
 
 app.MapGet("/order", async (IOrderService orderService) => orderService.GetAllOrders());
-app.MapGet("/item", async (IItemService itemService) => itemService.GetAllItems());
+//app.MapGet("/item", async (IItemService itemService) => itemService.GetAllItems());
 
-app.MapGet("/order/{id}", (Guid id, IOrderService orderService) =>
+app.MapGet("/order/{id}", (int id, IOrderService orderService) =>
 {
     var order = orderService.GetOrderById(id);
     return order is null ? Results.NotFound() : Results.Ok(order);
 });
 
-app.MapGet("/item/{id}", (Guid id, IItemService itemService) =>
+//app.MapGet("/item/{id}", (int id, IItemService itemService) =>
+//{
+//    var item = itemService.GetItemById(id);
+//    return item is null ? Results.NotFound() : Results.Ok(item);
+//});
+
+app.MapGet("/user/{email}", (string email, IAuthenticationService authenticationService) =>
 {
-    var item = itemService.GetItemById(id);
-    return item is null ? Results.NotFound() : Results.Ok(item);
+    var user = authenticationService.GetUser(email);
+    return user is null ? Results.NotFound() : Results.Ok(user);
 });
 
 app.Run();

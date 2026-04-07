@@ -12,47 +12,45 @@ namespace Application.Services.Items
         {
             _itemRepository = itemRepository;
         }
-        public List<GetItemDto> GetAllItems()
-        {
-            return _itemRepository.GetItems()
-                .Select(order => new GetItemDto
-                {
-                    Id = order.ItemId,
-                    Name = order.Name,
-                    Price = order.Price,
-                    Stock = order.Stock
-                })
-                .ToList();
-        }
+        //public List<GetItemDto> GetAllItems()
+        //{
+        //    return _itemRepository.GetItems()
+        //        .Select(order => new GetItemDto
+        //        {
+        //            Name = order.Name,
+        //            Price = order.Price,
+        //            Stock = order.Stock
+        //        })
+        //        .ToList();
+        //}
 
-        public GetItemDto GetItemById(Guid id)
-        {
-            var order = _itemRepository.GetItemById(id);
+        //public GetItemDto GetItemById(int id)
+        //{
+        //    var order = _itemRepository.GetItemById(id);
 
-            if (order is null)
-            {
-                return null;
-            }
+        //    if (order is null)
+        //    {
+        //        return null;
+        //    }
 
-            return new GetItemDto()
-            {
-                Id = order.ItemId,
-                Name = order.Name,
-                Price = order.Price,
-                Stock = order.Stock
-            };
-        }
+        //    return new GetItemDto()
+        //    {
+        //        Name = order.Name,
+        //        Price = order.Price,
+        //        Stock = order.Stock
+        //    };
+        //}
 
-        public void CreateItem(CreateItemDto createItemDto)
-        {
-            var item = new Item()
-            {
-                Name = createItemDto.Name,
-                Price = createItemDto.Price,
-                Stock = createItemDto.Stock
-            };
+        //public void CreateItem(CreateItemDto createItemDto)
+        //{
+        //    var item = new Item()
+        //    {
+        //        Name = createItemDto.Name,
+        //        Price = createItemDto.Price,
+        //        Stock = createItemDto.Stock
+        //    };
 
-            _itemRepository.AddItem(item);
-        }
+        //    _itemRepository.AddItem(item);
+        //}
     }
 }

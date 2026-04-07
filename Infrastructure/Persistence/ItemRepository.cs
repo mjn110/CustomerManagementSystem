@@ -11,10 +11,10 @@ namespace Infrastructure.Persistence
             _items.Add(item);
         }
 
-        public Item GetItemById(Guid id)
-        {
-            return _items.SingleOrDefault(o => o.ItemId == id);
-        }
+        //public Item GetItemById(int id)
+        //{
+        //    return _items.SingleOrDefault(o => o.ItemId == id);
+        //}
 
         public List<Item> GetItems()
         {

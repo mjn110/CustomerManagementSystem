@@ -21,43 +21,47 @@ namespace WebApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDto request)
         {
-            var user = new User
+            try
             {
-                UserName = request.Email,
-                Email = request.Email,
-                FirstName = request.firstName,
-                LastName = request.lastName
-            };
-            IdentityResult identityResult = await _userManager.CreateAsync(user, request.Password);
+                var response = await _authenticationService.Register(request.firstName, request.lastName, request.Email, request.Password);
 
-            if (!identityResult.Succeeded)
-            { 
-                return (IActionResult)Results.BadRequest(identityResult.Errors);
+                if (response is null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(response.Token);
             }
-
-            IdentityResult addToRoleResult = await _userManager.AddToRoleAsync(user, Roles.User);
-
-            if (!identityResult.Succeeded)
+            catch (InvalidOperationException ex)
             {
-                return (IActionResult)Results.BadRequest(identityResult.Errors);
+                return BadRequest(new { message = ex.Message });
             }
-
-            return (IActionResult)Results.Ok();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred during registration.", details = ex.Message });
+            }
         }
 
         [HttpPost("login")]
         public IActionResult Login(LoginDto request)
         {
-            var response = _authenticationService.Login(
+            try
+            {
+                var response = _authenticationService.Login(
                 request.Email,
                 request.Password);
 
-            //var response = new AuthenticationResponse(
-            //    authResult.User,
-            //    authResult.Token
-            //);
+                if (response is null)
+                {
+                    return BadRequest();
+                }
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred during authentication.", details = ex.Message });
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ public class OrderRepository : IOrderRepository
         _orders.Add(order);
     }
 
-    public Order GetOrderById(Guid id)
+    public Order GetOrderById(int id)
     {
         return _orders.SingleOrDefault(o => o.OrderId == id);
     }
